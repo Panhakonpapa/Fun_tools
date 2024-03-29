@@ -16,10 +16,16 @@ const char* get_Operating_sys() {
 	#endif 	
 	return os_name; 
 }
-int main() {
-   const char* shell = getenv("SHELL");
+const char* get_Shell() {	
+   	const char* shell = getenv("SHELL");
+	return shell; 
+}
+const char* username() {	
    struct passwd *pw = getpwuid(getuid());
    const char* username = pw->pw_name; 
+   return username; 
+}
+unsigned long meminfo() {	
    char cpBuffer[256];
    unsigned long total_memery = 0; 
    FILE* FileOpen; 
@@ -36,30 +42,42 @@ int main() {
 	}
    }   
    fclose(FileOpen);
+   return total_memery; 
+}
+const char* getPackege() {				
+   FILE* FileOpen; 	
    char buffer[5]; 
+   char* results = (char *)malloc(5);  
    FileOpen = popen("pacman -Q | wc -l", "r");
    if (FileOpen == NULL) {
 	perror("Error\n"); 
-	return -1; 
    }
    fgets(buffer, 5, FileOpen); 		
    pclose(FileOpen);
-
-   char bufferUptime[61];
+   strcpy(results, buffer);
+   return results; 
+}
+const char* uptime() {
+   FILE* FileOpen; 	
+   char bufferUptime[50];
    FileOpen = popen("uptime", "r"); 
    if (FileOpen == NULL) {
 	perror("Error\n"); 
-	return -1; 
    }
-   fgets(bufferUptime, 61, FileOpen); 		
+   fgets(bufferUptime, 50, FileOpen); 		
    pclose(FileOpen);
+   char* results = (char*)malloc(50); 
+   strcpy(results, bufferUptime);
+   return results;
+}
 
+int main() {
     printf("                          .,,uod8B8bou,,.\t\t\t        Operating System:  %s\n", get_Operating_sys());
-    printf("                ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.\t\t\tShell:             %s\n", shell);
-    printf("           ,=m8BBBBBBBBBBBBBBBRPFT?!||||||||||||||\t\t\tUser Pofile:       %s\n", username);
-    printf("           !...:!TVBBBRPFT||||||||||!!^^lll   ||||\t\t\tMemory:            %lu\n", total_memery / 1000);
-    printf("           !.......:!?|||||!!^^'              ||||\t\t\tPackages:          %s\n", buffer);
-    printf("           !.........||||                     ||||\t\t\tUptime:           %s\n", bufferUptime);
+    printf("                ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.\t\t\tShell:             %s\n", get_Shell());
+    printf("           ,=m8BBBBBBBBBBBBBBBRPFT?!||||||||||||||\t\t\tUser Pofile:       %s\n", username());
+    printf("           !...:!TVBBBRPFT||||||||||!!^^lll   ||||\t\t\tMemory:            %lu\n", meminfo() / 1000);
+    printf("           !.......:!?|||||!!^^'              ||||\t\t\tPackages:          %s\n", getPackege());
+    printf("           !.........||||                     ||||\t\t\tUptime:           %s\n", uptime());
     printf("           !.........||||  ##                 ||||\t\t\tFamily:	           UNIX 1960\n");
     printf("           !.........||||  :)                 ||||\t\t\tCPU:		   Intel\n");
     printf("           !.........||||                     ||||\t\t\tGPU:		   Intel\n");
