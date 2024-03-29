@@ -1,14 +1,18 @@
-#include <stdio.h> 
-	
+#include <stdio.h> 	
+#include <error.h> 
 int main(int argc, char* argv[]) {
-	FILE* fileOpen;
+	FILE* fileOpen;	
 	char* filePath = argv[1];
+	if (filePath == NULL) {
+		perror("Error file opening file\n"); 	
+		return -1; 
+	}
 	char ch; 		
 	long file_size; 
 	//*- FileOpen with givin filePath //
 	fileOpen = fopen(filePath, "r"); 
 	if (fileOpen == NULL) { 
-		printf("Error\n");
+		perror("Error\n");
 		return -1; 
 	}
 	//* - Read the content of the files //
@@ -21,5 +25,6 @@ int main(int argc, char* argv[]) {
 	//* - Get the fileSize  // 	
 	printf("\n"); 	
 	printf("file size: %ldbytes\n", file_size); 
+	fclose(fileOpen);	
 	return 0; 
 }
