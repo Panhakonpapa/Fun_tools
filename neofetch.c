@@ -16,17 +16,22 @@ const char* get_Operating_sys() {
 	#endif 	
 	return os_name; 
 }
+
+//* - get user shell env //
 const char* get_Shell() {	
-   	const char* shell = getenv("SHELL");
+   	const char* shell = getenv("SHELL"); 
 	return shell; 
 }
+//* - get current user // 
 const char* username() {	
    struct passwd *pw = getpwuid(getuid());
    const char* username = pw->pw_name; 
    return username; 
 }
+
+//* get computer memery //
 unsigned long meminfo() {	
-   char cpBuffer[256];
+   char *cpBuffer = malloc(256);
    unsigned long total_memery = 0; 
    FILE* FileOpen; 
    FileOpen = fopen("/proc/meminfo", "r"); 
@@ -35,7 +40,6 @@ unsigned long meminfo() {
 	return -1; 
    }
    while (fgets(cpBuffer, 256, FileOpen) != NULL) {
-
 	if (strstr(cpBuffer, "MemTotal:") != NULL) {
 		sscanf(cpBuffer, "MemTotal: %lu kB", &total_memery);
 		break; 	
@@ -44,19 +48,30 @@ unsigned long meminfo() {
    fclose(FileOpen);
    return total_memery; 
 }
+
+//* - get num of packages that installed // 
 const char* getPackege() {				
    FILE* FileOpen; 	
-   char buffer[5]; 
+   //* it a builtin tools for all unix systems so the uptime command we only read only 5 btyes
+    char buffer[5]; 
    char* results = (char *)malloc(5);  
    FileOpen = popen("pacman -Q | wc -l", "r");
    if (FileOpen == NULL) {
 	perror("Error\n"); 
+   }
+   long size; 
+   size = ftell(FileOpen); 
+   //* bound checking //
+   if (size >= 5) {
+	   char* error = "Bad value";
+	   return error;
    }
    fgets(buffer, 5, FileOpen); 		
    pclose(FileOpen);
    strcpy(results, buffer);
    return results; 
 }
+//* uptime only read 50bytes of cli in ascii // 
 const char* uptime() {
    FILE* FileOpen; 	
    char bufferUptime[50];
@@ -70,7 +85,9 @@ const char* uptime() {
    strcpy(results, bufferUptime);
    return results;
 }
-
+//* This is a small projcets 
+//* I made it just for fun :) 
+//* A fun little tools kit for all people 
 int main() {
     printf("                          .,,uod8B8bou,,.\t\t\t        Operating System:  %s\n", get_Operating_sys());
     printf("                ..,uod8BBBBBBBBBBBBBBBBRPFT?l!i:.\t\t\tShell:             %s\n", get_Shell());
